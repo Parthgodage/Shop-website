@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lal Bahadur Electronic Pen</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fffaf2; margin: 0; padding: 0; }
+    header { background: orange; color: white; padding: 20px; text-align: center; }
+    .intro { background: #fff3e0; padding: 15px; text-align: center; font-size: 18px; }
+    .container { display: flex; flex-wrap: wrap; justify-content: center; margin: 20px; }
+    .product { border: 1px solid orange; border-radius: 10px; margin: 10px; padding: 15px; width: 220px; text-align: center; background: white; }
+    .product img { max-width: 100%; height: 150px; object-fit: cover; border-radius: 8px; }
+    .order-form, .auth-form { background: #fff3e0; padding: 20px; margin: 20px; border-radius: 12px; max-width: 400px; margin-left: auto; margin-right: auto; }
+    input, textarea, button, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid orange; }
+    button { background: orange; color: white; border: none; cursor: pointer; }
+    button:hover { background: #e67e22; }
+    footer { background: #f9f9f9; padding: 15px; text-align: center; margin-top: 20px; border-top: 1px solid #ccc; }
+    .hidden { display: none; }
+    .switch-link { text-align: center; margin-top: 10px; cursor: pointer; color: blue; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Lal Bahadur Electronic Pen</h1>
+  </header>
+
+  <p class="intro">
+    We are <b>official dealers of Ahuja Sound Systems</b>.<br>
+    All our products are available at <b>wholesale prices</b>.<br>
+    Lal Bahadur Electronic Pen is trusted by customers across Pen for quality electronics at the best rates.<br>
+    The only shop in Pen which sells <b>Ahuja Sound Systems</b>.<br>
+    We are also an authorized distributor of <b>Videocon D2H</b> and <b>DishTV</b>.
+  </p>
+
+  <!-- SIGNUP FORM -->
+  <div class="auth-form" id="signupFormDiv">
+    <h2>Sign Up</h2>
+    <form id="signupForm" onsubmit="signup(event)">
+      <label>Username</label>
+      <input type="text" id="signupUsername" required>
+      <label>Password</label>
+      <input type="password" id="signupPassword" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <div class="switch-link" onclick="switchForm('login')">Already have an account? Login</div>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div class="auth-form hidden" id="loginFormDiv">
+    <h2>Login</h2>
+    <form id="loginForm" onsubmit="login(event)">
+      <label>Username</label>
+      <input type="text" id="loginUsername" required>
+      <label>Password</label>
+      <input type="password" id="loginPassword" required>
+      <button type="submit">Login</button>
+    </form>
+    <div class="switch-link" onclick="switchForm('signup')">Don't have an account? Sign Up</div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="container hidden" id="productContainer"></div>
+
+  <!-- ORDER FORM -->
+  <div class="order-form hidden" id="orderFormDiv">
+    <h2>Place Your Order</h2>
+    <form id="orderForm" onsubmit="submitOrder(event)">
+      <label>Product Name</label>
+      <input type="text" id="product" required readonly>
+      <input type="hidden" id="productPrice">
+
+      <!-- ✅ QUANTITY OPTION -->
+      <label>Quantity</label>
+      <select id="quantity" required>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+
+      <label>Your Name</label>
+      <input type="text" id="name" required>
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required>
+
+      <label>Address</label>
+      <textarea id="address" required></textarea>
+
+      <button type="submit">Confirm Order</button>
+    </form>
+    <button onclick="logout()" style="margin-top:10px; background:red;">Logout</button>
+  </div>
+
+  <footer>
+    📧 Email: lalbahadurelectronics@gmail.com | 📞 Phone: 9423379171 <br>
+    📍 Address: Lal Bahadur Electronics, Opposite To State Bank Of India, Pen, Raigad 402107
+  </footer>
+
+  <script>
+    // === SWITCH FORMS ===
+    function switchForm(form) {
+      if(form === 'login') {
+        document.getElementById('signupFormDiv').classList.add('hidden');
+        document.getElementById('loginFormDiv').classList.remove('hidden');
+      } else {
+        document.getElementById('loginFormDiv').classList.add('hidden');
+        document.getElementById('signupFormDiv').classList.remove('hidden');
+      }
+    }
+
+    // === SIGNUP ===
+    function signup(e) {
+      e.preventDefault();
+      const username = document.getElementById('signupUsername').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      if(users.find(u => u.username === username)) {
+        alert("❌ Username already exists.");
+        return;
+      }
+
+      users.push({ username, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      alert("✅ Signup successful! Please login.");
+      switchForm('login');
+    }
+
+    // === LOGIN ===
+    function login(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if(user) {
+        localStorage.setItem("loggedIn", username);
+        alert("✅ Login successful!");
+        showContent();
+      } else {
+        alert("❌ Invalid credentials.");
+      }
+    }
+
+    // === LOGOUT ===
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      location.reload();
+    }
+
+    // === SHOW CONTENT AFTER LOGIN ===
+    function showContent() {
+      const loggedInUser = localStorage.getItem("loggedIn");
+      if(loggedInUser) {
+        document.getElementById('loginFormDiv').classList.add('hidden');
+        document.getElementById('signupFormDiv').classList.add('hidden');
+        document.getElementById('productContainer').classList.remove('hidden');
+        document.getElementById('orderFormDiv').classList.remove('hidden');
+        loadProducts();
+      }
+    }
+
+    // === PRODUCTS & ORDER SYSTEM ===
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem("products")) || [
+        { name: "Ahuja Speaker", price: 5000, category: "Audio", image: "https://via.placeholder.com/150" },
+        { name: "Videocon D2H Box", price: 2500, category: "TV", image: "https://via.placeholder.com/150" }
+      ];
+      localStorage.setItem("products", JSON.stringify(products));
+
+      const container = document.getElementById("productContainer");
+      container.innerHTML = "";
+      products.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "product";
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>₹${p.price}</p>
+          <p><b>${p.category}</b></p>
+        `;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = "Order Now";
+        btn.addEventListener("click", () => prefillOrder(p.name, p.price));
+        card.appendChild(btn);
+        container.appendChild(card);
+      });
+    }
+
+    function prefillOrder(name, price) {
+      document.getElementById('product').value = name;
+      document.getElementById('productPrice').value = price;
+      document.getElementById('quantity').value = "1"; // default reset
+      window.scrollTo({ top: document.getElementById('orderForm').offsetTop, behavior: 'smooth' });
+    }
+
+    function submitOrder(e) {
+      e.preventDefault();
+      const product = document.getElementById('product').value.trim();
+      const price = parseFloat(document.getElementById('productPrice').value) || 0;
+      const quantity = parseInt(document.getElementById('quantity').value) || 1;
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+
+      if (!product || !name || !phone || !address) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      const total = price * quantity;
+
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      orders.push({ 
+        product, 
+        price, 
+        quantity, 
+        total, 
+        name, 
+        phone, 
+        address, 
+        date: new Date().toLocaleString() 
+      });
+      localStorage.setItem("orders", JSON.stringify(orders));
+
+      alert("✅ Thank you " + name + "! Your order for " + quantity + " x " + product +
+            " has been placed.\nTotal: ₹" + total + "\nWe will contact you at " + phone + ".");
+      
+      e.target.reset();
+      document.getElementById('productPrice').value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', showContent);
+  </script>
+</body>
+</html>

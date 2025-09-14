@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Lal Bahadur Electronic Pen</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fffaf2; padding: 30px; }
+    h1 { text-align: center; color: orange; }
+    form { max-width: 400px; margin: auto; background: #fff3e0; padding: 20px; border-radius: 12px; }
+    input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid orange; border-radius: 6px; }
+    button { width: 100%; padding: 10px; margin-top: 10px; background: orange; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #e67e22; }
+    p { text-align: center; margin-top: 10px; }
+    a { color: #e67e22; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Customer Login</h1>
+
+  <form onsubmit="login(event)">
+    <input type="text" id="username" placeholder="Enter Username" required>
+    <input type="password" id="password" placeholder="Enter Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <p>Don’t have an account? <a href="#" onclick="signup()">Sign Up</a></p>
+
+  <script>
+    function signup() {
+      let username = prompt("Choose a username:");
+      let password = prompt("Choose a password:");
+      if(username && password){
+        localStorage.setItem("user", JSON.stringify({username, password}));
+        alert("Account created successfully! Now login.");
+      }
+    }
+
+    function login(e){
+      e.preventDefault();
+      let username = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+      let savedUser = JSON.parse(localStorage.getItem("user"));
+
+      if(savedUser && savedUser.username===username && savedUser.password===password){
+        localStorage.setItem("loggedInUser", username);
+        alert("Login successful!");
+        window.location.href="index.html";
+      } else {
+        alert("Invalid username or password.");
+      }
+    }
+  </script>
+</body>
+</html>

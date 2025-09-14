@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel - Lal Bahadur Electronic Pen</title>
+<style>
+body{font-family:Arial,sans-serif;background:#fffaf2;color:#333;padding:20px;}
+h1{text-align:center;color:orange;}
+h2{color:#d35400;}
+form{max-width:500px;margin:auto;background:#fff3e0;padding:20px;border-radius:12px;}
+input,select{width:100%;padding:10px;margin:8px 0;border:1px solid orange;border-radius:6px;}
+button{background:orange;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;margin-top:5px;}
+button:hover{background:#e67e22;}
+.product-list,.order-list{margin-top:30px;}
+.product-item,.order-item{border:1px solid orange;border-radius:6px;padding:10px;margin:5px 0;}
+footer{margin-top:40px;text-align:center;color:#444;font-size:14px;}
+</style>
+</head>
+<body>
+<h1>Admin Panel</h1>
+
+<form onsubmit="addProduct(event)">
+  <label>Product Name</label>
+  <input type="text" id="name" required>
+  <label>Price (₹)</label>
+  <input type="number" id="price" required>
+  <label>Image URL</label>
+  <input type="text" id="image" placeholder="https://...jpg" required>
+  <label>Category</label>
+  <select id="category" required>
+    <option>Bulbs</option>
+    <option>Fans</option>
+    <option>TV</option>
+    <option>Videocon D2H</option>
+    <option>DishTV</option>
+    <option>Ahuja</option>
+    <option>Iron</option>       <!-- ✅ Added -->
+    <option>Coolers</option>    <!-- ✅ Added -->
+  </select>
+  <button type="submit">Add Product</button>
+</form>
+
+<div class="product-list" id="productList"></div>
+<div class="order-list" id="orderList"></div>
+
+<footer>
+  <p>Email: lalbahadurelectronics@gmail.com | Phone: 9423379171</p>
+  <p>Address: Lal Bahadur Electronics, Opposite To State Bank Of India, Pen, Raigad 402107</p>
+</footer>
+
+<script>
+// Add product
+function addProduct(e){
+  e.preventDefault();
+  let name=document.getElementById('name').value;
+  let price=document.getElementById('price').value;
+  let image=document.getElementById('image').value;
+  let category=document.getElementById('category').value;
+
+  let products=JSON.parse(localStorage.getItem("products"))||[];
+  products.push({name,price,image,category});
+  localStorage.setItem("products",JSON.stringify(products));
+  alert("✅ Product Added Successfully!");
+  e.target.reset();
+  displayProducts();
+}
+
+// Display products
+function displayProducts(){
+  let products=JSON.parse(localStorage.getItem("products"))||[];
+  let list=document.getElementById("productList");
+  list.innerHTML="<h2>Current Products</h2>";
+  if(products.length===0){list.innerHTML+="<p>No products available.</p>"; return;}
+
+  products.forEach((p,idx)=>{
+    const div=document.createElement('div');
+    div.className='product-item';
+    div.innerHTML=`${p.name} - ₹${p.price} (${p.category})`;
+    const delBtn=document.createElement('button');
+    delBtn.textContent='Delete';
+    delBtn.onclick=()=>deleteProduct(idx);
+    div.appendChild(delBtn);
+    list.appendChild(div);
+  });
+
+  const clearBtn=document.createElement('button');
+  clearBtn.textContent='Clear All Products';
+  clearBtn.onclick=()=>{
+    if(confirm('Delete ALL products?')){
+      localStorage.removeItem('products');
+      displayProducts();
+    }
+  };
+  list.appendChild(clearBtn);
+}
+
+function deleteProduct(index){
+  let products=JSON.parse(localStorage.getItem("products"))||[];
+  products.splice(index,1);
+  localStorage.setItem("products",JSON.stringify(products));
+  displayProducts();
+}
+
+// Display orders
+function displayOrders(){
+  let orders=JSON.parse(localStorage.getItem("orders"))||[];
+  let list=document.getElementById("orderList");
+  list.innerHTML="<h2>Orders</h2>";
+  if(orders.length===0){list.innerHTML+="<p>No orders placed yet.</p>"; return;}
+
+  orders.forEach((o,idx)=>{
+    const div=document.createElement('div');
+    div.className='order-item';
+    div.innerHTML=`<b>${o.product}</b> - ₹${o.price}<br>
+                   Customer: ${o.customer || o.name || "N/A"}<br>
+                   Phone: ${o.phone}<br>
+                   Address: ${o.address}<br>
+                   Date: ${o.date}`;
+    const delBtn=document.createElement('button');
+    delBtn.textContent='Delete';
+    delBtn.onclick=()=>deleteOrder(idx);
+    div.appendChild(delBtn);
+    list.appendChild(div);
+  });
+
+  const clearBtn=document.createElement('button');
+  clearBtn.textContent='Clear All Orders';
+  clearBtn.onclick=()=>{
+    if(confirm('Delete ALL orders?')){
+      localStorage.removeItem('orders');
+      displayOrders();
+    }
+  };
+  list.appendChild(clearBtn);
+}
+
+// Delete single order
+function deleteOrder(index){
+  let orders=JSON.parse(localStorage.getItem("orders"))||[];
+  orders.splice(index,1);
+  localStorage.setItem("orders",JSON.stringify(orders));
+  displayOrders();
+}
+
+// Initial load
+displayProducts();
+displayOrders();
+</script>
+</body>
+</html>
